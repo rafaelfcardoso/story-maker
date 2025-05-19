@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev index.ts",
     "build": "npm run build:client && tsc",
-    "build:client": "cd ../client && npm ci && npm run build && cd -",
+    "build:client": "echo 'Current PWD for build:client:' $(pwd) && ls -la .. && ls -la ../client && cd ../client && npm ci && npm run build && cd -",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
