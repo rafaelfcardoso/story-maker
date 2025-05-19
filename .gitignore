@@ -1,0 +1,85 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Dependency directories
+node_modules/
+*/node_modules/ # Catches node_modules in subdirectories like client/ and server/
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Environment variables
+.env
+.env.*
+!.env.example # If you have an example env file, don't ignore it
+
+# Project-specific
+scratchpad.md
+story-maker-project.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Client specific (Vite / React)
+client/dist/
+client/.vite/
+client/coverage/ # If you run tests in the client
+
+# Server specific (Node.js / TypeScript)
+server/dist/ # Assuming your TypeScript output for the server goes here
+# If server has its own .env, and you want to be explicit:
+# server/.env
+# server/.env.*
+
+# Production build artifacts that might be generated at the root
+# dist/
+# build/
