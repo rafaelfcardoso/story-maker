@@ -287,8 +287,9 @@ function App() {
     setError(null);
 
     try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
       const imageGenerationPromises = story.scenes.map(async (scene) => {
-        const response = await fetch('http://localhost:3001/api/image', {
+        const response = await fetch(`${backendUrl}/api/image`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
