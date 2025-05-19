@@ -47,7 +47,6 @@ build/Release
 !.env.example # If you have an example env file, don't ignore it
 
 # Project-specific
-scratchpad.md
 story-maker-project.md
 
 # macOS
