@@ -15,6 +15,9 @@ interface Story {
   scenes: Scene[];
 }
 
+// Explicit type for wizard steps
+export type WizardStep = 'briefing' | 'proposal' | 'sceneCount' | 'story' | 'style' | 'images';
+
 // Helper function to generate HTML for the story
 const generateStoryHTML = (story: Story): string => {
   const storyTitle = story.title || 'My Story';
@@ -114,9 +117,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   type Message = { role: 'user' | 'system'; content: string };
   const [messages, setMessages] = useState<Message[]>([]);
-  const [step, setStep] = useState<
-    'briefing' | 'proposal' | 'sceneCount' | 'story' | 'style' | 'images'
-  >('briefing');
+  const [step, setStep] = useState<WizardStep>('briefing');
   const [pendingProposal, setPendingProposal] = useState<Story | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
@@ -629,7 +630,7 @@ function App() {
                   }}
                 />
               )}
-              {step === 'sceneCount' && (
+              {step === 'proposal' && (
                 <input
                   type="number"
                   value={numScenes}
@@ -746,7 +747,7 @@ function App() {
                     loading ||
                     imageLoading ||
                     (!briefing.trim() && step === 'briefing') ||
-                    (step === 'sceneCount' && numScenes < 1) ||
+                    (step === 'proposal' && numScenes < 1) ||
                     (step === 'style' && !selectedStyle.trim())
                   }
                   style={{
@@ -764,7 +765,7 @@ function App() {
                       loading ||
                       imageLoading ||
                       (!briefing.trim() && step === 'briefing') ||
-                      (step === 'sceneCount' && numScenes < 1) ||
+                      (step === 'proposal' && numScenes < 1) ||
                       (step === 'style' && !selectedStyle.trim())
                         ? 'not-allowed'
                         : 'pointer',
