@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "npx ts-node-dev index.ts",
-    "build": "npm run build:client && ./node_modules/.bin/tsc",
+    "build": "npm run build:client && echo '--- Ensuring server dependencies ---' && npm install && echo '--- Server dependencies hopefully installed. PWD:' && pwd && echo '--- Listing /app/server/node_modules/.bin/ (if it exists) ---' && ls -la node_modules/.bin/ && echo '--- Attempting to run tsc ---' && ./node_modules/.bin/tsc",
     "build:client": "echo 'Building client. PWD (should be /app/server/):' $(pwd) && ls -la . && ls -la ../ && cd ../client && npm ci && npm run build && cd -",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
