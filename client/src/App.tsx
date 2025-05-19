@@ -90,7 +90,9 @@ const generateStoryHTML = (story: Story): string => {
 `;
     }
     if (scene.image_url) {
-      html += `      <img src="${scene.image_url}" alt="Scene ${index + 1} Visual">
+      html += `      <img src="${scene.image_url}" alt="Scene ${
+        index + 1
+      } Visual">
 `;
     }
     html += `    </div>
@@ -180,7 +182,11 @@ function App() {
         ]);
         setStep('proposal');
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error occurred while generating proposal.');
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Unknown error occurred while generating proposal.'
+        );
       } finally {
         setLoading(false);
       }
@@ -190,9 +196,12 @@ function App() {
         return;
       }
       setError(null); // Clear previous errors
-      setMessages((prev) => [...prev, { role: 'user', content: `Chosen style: ${selectedStyle}` }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'user', content: `Chosen style: ${selectedStyle}` },
+      ]);
       // Directly call handleGenerateImages, assuming it handles its own loading/error states
-      await handleGenerateImages(); 
+      await handleGenerateImages();
     }
     // Add other steps like 'sceneCount' if they also use this main submit button
   };
@@ -208,12 +217,15 @@ function App() {
         description: proposalScene.description, // Use actual description from proposal
         narration: proposalScene.narration || '', // Use actual narration or fallback
         dialogue: proposalScene.dialogue || '', // Use actual dialogue or fallback
-        image_url: null, 
+        image_url: null,
       })),
     });
     setMessages((prevMessages) => [
       ...prevMessages,
-      { role: 'system', content: 'Great! Now, let\'s choose a visual style for the images.' },
+      {
+        role: 'system',
+        content: "Great! Now, let's choose a visual style for the images.",
+      },
     ]);
     setStep('style');
     setPendingProposal(null); // Clear pending proposal
@@ -233,7 +245,10 @@ function App() {
     // Add user's choice to messages for context
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content: `Let's go with ${numScenes} scene${numScenes > 1 ? 's' : ''}.` },
+      {
+        role: 'user',
+        content: `Let's go with ${numScenes} scene${numScenes > 1 ? 's' : ''}.`,
+      },
     ]);
 
     // Transition to the next step - assuming 'style' selection as per flow.
@@ -262,7 +277,10 @@ function App() {
     setImageLoading(true);
     setMessages((prev) => [
       ...prev,
-      { role: 'user', content: `Generate images for the story in a ${selectedStyle} style.` },
+      {
+        role: 'user',
+        content: `Generate images for the story in a ${selectedStyle} style.`,
+      },
       { role: 'system', content: 'Generating images, please wait...' },
     ]);
     setError(null);
@@ -274,7 +292,10 @@ function App() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ sceneDescription: scene.description, style: selectedStyle }),
+          body: JSON.stringify({
+            sceneDescription: scene.description,
+            style: selectedStyle,
+          }),
         });
 
         if (!response.ok) {
@@ -284,10 +305,15 @@ function App() {
           } catch (parseError) {
             console.error('Error parsing error response:', parseError); // Added logging
             // If parsing errorData fails, throw a generic error with status
-            throw new Error(`HTTP error! status: ${response.status} for scene: ${scene.id}`);
+            throw new Error(
+              `HTTP error! status: ${response.status} for scene: ${scene.id}`
+            );
           }
           // If errorData is parsed, use its message or fall back to status
-          throw new Error(errorData.error || `HTTP error! status: ${response.status} for scene: ${scene.id}`);
+          throw new Error(
+            errorData.error ||
+              `HTTP error! status: ${response.status} for scene: ${scene.id}`
+          );
         }
         const data = await response.json(); // Server returns { imageUrl: string }
         return { sceneId: scene.id, imageUrl: data.imageUrl }; // Return sceneId to map back
@@ -296,35 +322,48 @@ function App() {
       const generatedImagesData = await Promise.all(imageGenerationPromises);
 
       // Update the main story state with the new image URLs
-      setStory(prevStory => {
+      setStory((prevStory) => {
         if (!prevStory) return null; // Should not happen if we checked story above
-        const updatedScenes = prevStory.scenes.map(scene => {
-          const imageData = generatedImagesData.find(img => img.sceneId === scene.id);
-          return imageData ? { ...scene, image_url: imageData.imageUrl } : scene;
+        const updatedScenes = prevStory.scenes.map((scene) => {
+          const imageData = generatedImagesData.find(
+            (img) => img.sceneId === scene.id
+          );
+          return imageData
+            ? { ...scene, image_url: imageData.imageUrl }
+            : scene;
         });
         return { ...prevStory, scenes: updatedScenes };
       });
 
       // Update the separate imageUrls state as well, if still used by UI
       // This might be simplified later if UI directly uses story.scenes[X].image_url
-      const allImageUrls = generatedImagesData.map(data => data.imageUrl).filter(url => url) as string[];
+      const allImageUrls = generatedImagesData
+        .map((data) => data.imageUrl)
+        .filter((url) => url) as string[];
       setImageUrls(allImageUrls);
 
       setMessages((prev) => [
         ...prev,
-        { role: 'system', content: `Here are the generated images for your story in a ${selectedStyle} style!` },
+        {
+          role: 'system',
+          content: `Here are the generated images for your story in a ${selectedStyle} style!`,
+        },
       ]);
       setStep('images'); // Or 'story' if images are displayed within the story view
     } catch (err: unknown) {
-      console.error("Error generating images:", err);
-      let errorMessage = 'Failed to generate images. Please check the server logs.';
+      console.error('Error generating images:', err);
+      let errorMessage =
+        'Failed to generate images. Please check the server logs.';
       if (err instanceof Error) {
         errorMessage = err.message;
       }
       setError(errorMessage);
       setMessages((prev) => [
         ...prev,
-        { role: 'system', content: `Sorry, I encountered an error generating images: ${errorMessage}` },
+        {
+          role: 'system',
+          content: `Sorry, I encountered an error generating images: ${errorMessage}`,
+        },
       ]);
     } finally {
       setImageLoading(false);
@@ -615,11 +654,14 @@ function App() {
                 />
               )}
               {step === 'style' && (
-                <div className="chat-form" style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: '100%' // Ensure the div itself takes full width
-                }}>
+                <div
+                  className="chat-form"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%', // Ensure the div itself takes full width
+                  }}
+                >
                   <div
                     style={{
                       display: 'flex',
@@ -748,12 +790,19 @@ function App() {
                 gap: '10px',
               }}
             >
-              <label htmlFor="scene-count-input" style={{ color: '#ccc', fontSize: '0.9em' }}>Number of Scenes:</label>
+              <label
+                htmlFor="scene-count-input"
+                style={{ color: '#ccc', fontSize: '0.9em' }}
+              >
+                Number of Scenes:
+              </label>
               <input
                 type="number"
                 id="scene-count-input"
                 value={numScenes}
-                onChange={(e) => setNumScenes(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                onChange={(e) =>
+                  setNumScenes(Math.max(1, parseInt(e.target.value, 10) || 1))
+                }
                 min="1"
                 style={{
                   padding: '8px',
@@ -852,22 +901,30 @@ function App() {
                         onClick={() => {
                           setActiveSceneIndex(index);
                           // Scroll the storyPanelRef to the top, as new content is loaded
-                          storyPanelRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                          storyPanelRef.current?.scrollTo({
+                            top: 0,
+                            behavior: 'smooth',
+                          });
                         }}
                         style={{
                           padding: '6px 12px',
-                          backgroundColor: activeSceneIndex === index
-                            ? 'rgba(0, 240, 200, 0.4)'
-                            : 'rgba(0, 240, 200, 0.15)',
-                          color: activeSceneIndex === index ? '#ffffff' : '#00f0c8',
+                          backgroundColor:
+                            activeSceneIndex === index
+                              ? 'rgba(0, 240, 200, 0.4)'
+                              : 'rgba(0, 240, 200, 0.15)',
+                          color:
+                            activeSceneIndex === index ? '#ffffff' : '#00f0c8',
                           textDecoration: 'none',
                           borderRadius: '12px',
                           fontSize: '0.9em',
-                          border: activeSceneIndex === index
-                            ? '1px solid #00f0c8'
-                            : '1px solid rgba(0, 240, 200, 0.3)',
-                          fontWeight: activeSceneIndex === index ? 'bold' : 'normal',
-                          transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, font-weight 0.2s ease',
+                          border:
+                            activeSceneIndex === index
+                              ? '1px solid #00f0c8'
+                              : '1px solid rgba(0, 240, 200, 0.3)',
+                          fontWeight:
+                            activeSceneIndex === index ? 'bold' : 'normal',
+                          transition:
+                            'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, font-weight 0.2s ease',
                         }}
                         onMouseOver={(e) => {
                           if (activeSceneIndex !== index) {
@@ -901,7 +958,12 @@ function App() {
                   }}
                 >
                   {(() => {
-                    if (!story || !story.scenes || story.scenes.length === 0 || activeSceneIndex >= story.scenes.length) {
+                    if (
+                      !story ||
+                      !story.scenes ||
+                      story.scenes.length === 0 ||
+                      activeSceneIndex >= story.scenes.length
+                    ) {
                       return <p>Loading scene or scene not available...</p>;
                     }
                     const currentScene = story.scenes[activeSceneIndex];
@@ -971,7 +1033,8 @@ function App() {
                               color: '#e0e0e0',
                             }}
                           >
-                            <strong>Description (for image prompt):</strong> {currentScene.description}
+                            <strong>Description (for image prompt):</strong>{' '}
+                            {currentScene.description}
                           </p>
                         )}
                         {currentScene.dialogue && (
@@ -994,19 +1057,30 @@ function App() {
             )}
 
             {story && story.scenes && story.scenes.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginBottom: '20px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: '15px',
+                  marginBottom: '20px',
+                }}
+              >
                 <button
                   onClick={() => {
                     if (activeSceneIndex > 0) {
                       setActiveSceneIndex(activeSceneIndex - 1);
-                      storyPanelRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                      storyPanelRef.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
                     }
                   }}
                   disabled={activeSceneIndex === 0}
                   style={{
                     padding: '8px 18px',
                     fontSize: '1em',
-                    backgroundColor: activeSceneIndex === 0 ? '#444' : '#007bff',
+                    backgroundColor:
+                      activeSceneIndex === 0 ? '#444' : '#007bff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -1020,19 +1094,29 @@ function App() {
                   onClick={() => {
                     if (activeSceneIndex < story.scenes.length - 1) {
                       setActiveSceneIndex(activeSceneIndex + 1);
-                      storyPanelRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                      storyPanelRef.current?.scrollTo({
+                        top: 0,
+                        behavior: 'smooth',
+                      });
                     }
                   }}
                   disabled={activeSceneIndex === story.scenes.length - 1}
                   style={{
                     padding: '8px 18px',
                     fontSize: '1em',
-                    backgroundColor: activeSceneIndex === story.scenes.length - 1 ? '#444' : '#007bff',
+                    backgroundColor:
+                      activeSceneIndex === story.scenes.length - 1
+                        ? '#444'
+                        : '#007bff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    cursor: activeSceneIndex === story.scenes.length - 1 ? 'not-allowed' : 'pointer',
-                    opacity: activeSceneIndex === story.scenes.length - 1 ? 0.6 : 1,
+                    cursor:
+                      activeSceneIndex === story.scenes.length - 1
+                        ? 'not-allowed'
+                        : 'pointer',
+                    opacity:
+                      activeSceneIndex === story.scenes.length - 1 ? 0.6 : 1,
                   }}
                 >
                   Next Scene
@@ -1040,9 +1124,12 @@ function App() {
               </div>
             )}
             {story && story.scenes && story.scenes.length > 0 && (
-              <div className="export-story-section" style={{ marginTop: '20px', textAlign: 'center' }}>
-                <button 
-                  onClick={() => { 
+              <div
+                className="export-story-section"
+                style={{ marginTop: '20px', textAlign: 'center' }}
+              >
+                <button
+                  onClick={() => {
                     const html = generateStoryHTML(story);
                     const blob = new Blob([html], { type: 'text/html' });
                     const url = URL.createObjectURL(blob);
